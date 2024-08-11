@@ -14,7 +14,16 @@
             <tr>
                 <td>City</td>
                 <td>
-                    <input type="text" name="city" maxlength="100" placeholder="Enter city name" />
+                    <input type="text" name="city" list="city" maxlength="50" placeholder="Enter city name" />
+                    <datalist id="city">
+                        <option value="austin">
+                        <option value="del valle">
+                        <option value="pflugerville">
+                        <option value="driftwood">
+                        <option value="manchaca">
+                        <option value="dripping springs">
+                        <option value="west lake hills">
+                    </datalist>
                 </td>
             </tr>
 
@@ -28,9 +37,14 @@
 
             <!----- Home Type ---------------------------------------------------------->
             <tr>
-                <td>Home Type</td>
                 <td>
-                    <input type="text" name="homeType" maxlength="50" placeholder="Enter home type" />
+                    <input type="text" name="homeType" list="homeTypes" maxlength="50" placeholder="Enter home type" />
+                    <datalist id="homeTypes">
+                        <option value="Single Family">
+                        <option value="Condo">
+                        <option value="Townhouse">
+                        <option value="Apartment">
+                    </datalist>
                 </td>
             </tr>
 
