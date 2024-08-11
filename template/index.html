@@ -1,52 +1,141 @@
-{% extends "layout.html"%}
-{% block title %}
-Hand Sign Digit Recognition
-{% endblock %}
+<html>
 
-{% block content %}
-<div class="container py-5">
+<head>
+    <title>Property Details Form</title>
+</head>
 
-    <header class="text-white text-center">
-        <h1 class="display-4">Hand Sign Digit Language Detection</h1>
-        <p class="lead mb-5">A webapp to detect a digit using hand sign language. Just drop an image of Hand Digit Sign
-            and see the magic.</p>
-    </header>
+<body>
+    <h2 align="center">Property Details Submission</h2>
+    <br />
+    <form action="/predict" method="POST">
+        <table align="center" cellpadding="10">
 
+            <!----- City ---------------------------------------------------------->
+            <tr>
+                <td>City</td>
+                <td>
+                    <input type="text" name="city" maxlength="100" placeholder="Enter city name" />
+                </td>
+            </tr>
 
-    <div class="row py-4">
-        <div class="col-lg-6 mx-auto">
+            <!----- Description ---------------------------------------------------------->
+            <tr>
+                <td>Description</td>
+                <td>
+                    <textarea name="description" maxlength="500" placeholder="Enter property description"></textarea>
+                </td>
+            </tr>
 
-            <!-- Upload image input-->
-            <form action="{{ url_for('predict_image_file') }}" enctype="multipart/form-data" method="POST">
-                <div class="input-group mb-3 px-2 py-2 rounded-pill bg-white shadow-sm">
-                    <input class="form-control border-0" id="upload" name="file" type="file">
-                    <label class="font-weight-light text-muted" for="upload" id="upload-label">Choose file</label>
-                    <div class="input-group-append">
-                        <label class="btn btn-light m-0 rounded-pill px-4" for="upload"> <i
-                                class="fa fa-cloud-upload mr-2 text-muted"></i><small
-                                class="text-uppercase font-weight-bold text-muted">Choose file</small></label>
-                    </div>
-                </div>
+            <!----- Home Type ---------------------------------------------------------->
+            <tr>
+                <td>Home Type</td>
+                <td>
+                    <input type="text" name="homeType" maxlength="50" placeholder="Enter home type" />
+                </td>
+            </tr>
 
+            <!----- Latitude ---------------------------------------------------------->
+            <tr>
+                <td>Latitude</td>
+                <td>
+                    <input type="text" name="latitude" maxlength="20" placeholder="Enter latitude" />
+                </td>
+            </tr>
 
-                <!-- Uploaded image area-->
-                <p class="font-italic text-white text-center">The image uploaded will be rendered inside the box
-                    below.</p>
-                <div class="image-area mt-4"><img alt="" class="img-fluid rounded shadow-sm mx-auto d-block"
-                        id="imageResult" name="imageResult" src="#"></div>
+            <!----- Longitude ---------------------------------------------------------->
+            <tr>
+                <td>Longitude</td>
+                <td>
+                    <input type="text" name="longitude" maxlength="20" placeholder="Enter longitude" />
+                </td>
+            </tr>
 
-                <!-- Submit button-->
-                <div class="container">
-                    <div class="row">
-                        <div class="col text-center">
-                            <input class="btn btn-primary my-3" type="submit" />
-                        </div>
-                    </div>
-                </div>
-            </form>
+            <!----- Garage Spaces ---------------------------------------------------------->
+            <tr>
+                <td>Garage Spaces</td>
+                <td>
+                    <input type="number" name="garageSpaces" placeholder="Enter number of garage spaces" />
+                </td>
+            </tr>
 
-        </div>
-    </div>
-</div>
+            <!----- Has Spa ---------------------------------------------------------->
+            <tr>
+                <td>Has Spa</td>
+                <td>
+                    <input type="radio" name="hasSpa" value="1"> Yes </input>
+                    <input type="radio" name="hasSpa" value="0"> No </input>
+                </td>
+            </tr>
 
-{% endblock %}
+            <!----- Year Built ---------------------------------------------------------->
+            <tr>
+                <td>Year Built</td>
+                <td>
+                    <input type="number" name="yearBuilt" placeholder="Enter year built" />
+                </td>
+            </tr>
+
+            <!----- Number of Patio and Porch Features ---------------------------------------------------------->
+            <tr>
+                <td>Patio/Porch Features</td>
+                <td>
+                    <input type="number" name="numOfPatioAndPorchFeatures" placeholder="Enter number of features" />
+                </td>
+            </tr>
+
+            <!----- Lot Size in SqFt ---------------------------------------------------------->
+            <tr>
+                <td>Lot Size (Sq Ft)</td>
+                <td>
+                    <input type="number" name="lotSizeSqFt" placeholder="Enter lot size in Sq Ft" />
+                </td>
+            </tr>
+
+            <!----- Average School Rating ---------------------------------------------------------->
+            <tr>
+                <td>Average School Rating</td>
+                <td>
+                    <input type="number" name="avgSchoolRating" placeholder="Enter average school rating" />
+                </td>
+            </tr>
+
+            <!----- Median Students Per Teacher ---------------------------------------------------------->
+            <tr>
+                <td>Median Students Per Teacher</td>
+                <td>
+                    <input type="number" name="MedianStudentsPerTeacher"
+                        placeholder="Enter median students per teacher" />
+                </td>
+            </tr>
+
+            <!----- Number of Bathrooms ---------------------------------------------------------->
+            <tr>
+                <td>Number of Bathrooms</td>
+                <td>
+                    <input type="number" name="numOfBathrooms" placeholder="Enter number of bathrooms" />
+                </td>
+            </tr>
+
+            <!----- Number of Bedrooms ---------------------------------------------------------->
+            <tr>
+                <td>Number of Bedrooms</td>
+                <td>
+                    <input type="number" name="numOfBedrooms" placeholder="Enter number of bedrooms" />
+                </td>
+            </tr>
+
+            <!----- Submit and Reset ---------------------------------------------------------->
+            <tr>
+                <td colspan="2" align="center">
+                    <input type="submit" value="Submit">
+                    &nbsp;&nbsp;
+                    <input type="reset" value="Reset" onclick="location.href='/';">
+                </td>
+            </tr>
+        </table>
+    </form>
+
+    <h3 align="center"> {{ prediction }} </h3>
+</body>
+
+</html>
