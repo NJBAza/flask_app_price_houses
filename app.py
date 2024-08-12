@@ -3,8 +3,6 @@ import os
 import sys
 from pathlib import Path
 
-import joblib
-import numpy as np
 import pandas as pd
 from flask import (
     Flask,
@@ -18,11 +16,20 @@ sys.path.append(str(PACKAGE_ROOT.parent))
 print(PACKAGE_ROOT)
 
 from packaging_ml_model.prediction_model.config import config
-from packaging_ml_model.prediction_model.processing.data_handling import load_pipeline
+from packaging_ml_model.prediction_model.predict import predictions
 
 app = Flask(__name__)
 
-classification_pipeline = load_pipeline(config.MODEL_NAME)
+RANDOM_NUMBER = 16092023
+ORIGINAL_FEATURES = config.ORIGINAL_FEATURES
+CATEGORICAL_FEATURES = config.CATEGORICAL_FEATURES
+NON_REQUIRED_FEATURES = ["uid", "priceRange", "MedianStudentsPerTeacher"]
+
+NUMERICAL_FEATURES = [
+    element
+    for element in ORIGINAL_FEATURES
+    if element not in CATEGORICAL_FEATURES and element not in NON_REQUIRED_FEATURES
+]
 
 
 # Views
@@ -33,27 +40,69 @@ def home():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-
     if request.method == "POST":
+        # Extract all form data into request_data dictionary
         request_data = dict(request.form)
-        del request_data["First_Name"]
-        del request_data["Last_Name"]
-        request_data = {k: int(v) for k, v in request_data.items()}
-        data = pd.DataFrame([request_data])
-        prediction = classification_pipeline.predict(data)
-        prediction_value = prediction[0]
-        # print(f"prediction is {prediction}")
 
-        if int(prediction_value) == 0:
-            result = "The price of the house is up 250000 USD"
-        if int(prediction_value) == 1:
-            result = "The price of the house is between 250000 and 350000 USD"
-        if int(prediction_value) == 2:
-            result = "The price of the house is between 350000 and 450000 USD"
-        if int(prediction_value) == 3:
-            result = "The price of the house is between 450000 and 650000 USD"
-        if int(prediction_value) == 4:
-            result = "The price of the house is bigger than 350000 USD"
+        # Example: Add specific fields manually (like 'textarea') if needed
+        text = request.form.get("description")
+        if text is not None:
+            request_data["description"] = text.strip()  # Add the text field to request_data
+
+        # Process numeric, boolean, and text fields as before
+        numeric_fields = [
+            "garageSpaces",
+            "yearBuilt",
+            "numOfPatioAndPorchFeatures",
+            "lotSizeSqFt",
+            "avgSchoolRating",
+            "numOfBathrooms",
+            "numOfBedrooms",
+        ]
+        boolean_fields = ["hasSpa"]
+        text_fields = [
+            "city",
+            "homeType",
+            "description",
+            "textarea",
+        ]  # Add 'textarea' if it's a text field
+
+        for field in numeric_fields:
+            if field in request_data:
+                try:
+                    request_data[field] = int(request_data[field])
+                except ValueError:
+                    return f"Invalid input for {field}: must be an integer", 400
+
+        for field in boolean_fields:
+            if field in request_data:
+                request_data[field] = bool(int(request_data[field]))
+
+        for field in text_fields:
+            if field in request_data:
+                request_data[field] = request_data[field].strip()
+                if request_data[field] == "":
+                    return f"Invalid input for {field}: cannot be empty", 400
+
+        # Adding default values for missing fields
+        if "MedianStudentsPerTeacher" not in request_data:
+            request_data["MedianStudentsPerTeacher"] = RANDOM_NUMBER
+        if "priceRange" not in request_data:
+            request_data["priceRange"] = "ANY VALUE"
+
+        # Convert the processed data to a DataFrame
+        data = pd.DataFrame([request_data])
+
+        # Assuming the predictions function is defined and handles transformations
+        prediction_value = predictions(data)["Predictions"][0]
+
+        # Interpret the prediction result
+        if prediction_value == "0-250000":
+            result = "The price of the house is up to 250,000 USD"
+        elif prediction_value == "650000+":
+            result = "The price of the house is greater than 650,000 USD"
+        else:
+            result = f"The price of the house is between {prediction_value} USD"
 
         return render_template("index.html", prediction=result)
 
@@ -69,22 +118,4 @@ def not_found(error):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=80)
-
-
-# data_test = [
-#     "austin",
-#     "A large set of bedrooms with modern amenities",
-#     "Single Family",
-#     30.2672,
-#     -97.7431,
-#     2,
-#     True,
-#     2010,
-#     3,
-#     8000,
-#     8,
-#     15,
-#     3,
-#     4,
-# ]
+    app.run(debug=True)

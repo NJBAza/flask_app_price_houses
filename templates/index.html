@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Details Form</title>
+    <style>
+        /* General Styles */
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            color: #f0a500;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #1f1f1f;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #000000;
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #f0a500;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background-color: #2c2c2c;
+            color: #ffffff;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        input[type="submit"],
+        input[type="reset"] {
+            background-color: #f0a500;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 48%;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"]:hover,
+        input[type="reset"]:hover {
+            background-color: #d48800;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .result {
+            background-color: #2c2c2c;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+            box-shadow: 0px 0px 5px 0px #000000;
+        }
+
+        .result h3 {
+            margin: 0;
+            color: #f0a500;
+        }
+
+        ::placeholder {
+            color: #aaaaaa;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="/predict" method="POST">
+        <h2>Property Details Submission</h2>
+
+        <!-- City -->
+        <label for="city">City</label>
+        <input type="text" id="city" name="city" list="cities" maxlength="50" placeholder="Enter city name">
+        <datalist id="cities">
+            <option value="austin">
+            <option value="del valle">
+            <option value="pflugerville">
+            <option value="driftwood">
+            <option value="manchaca">
+            <option value="dripping springs">
+            <option value="west lake hills">
+        </datalist>
+
+        <!-- Description -->
+        <label for="description">Description</label>
+        <textarea id="description" name="description" maxlength="500" placeholder="Enter property description"></textarea>
+
+        <!-- Home Type -->
+        <label for="homeType">Home Type</label>
+        <input type="text" id="homeType" name="homeType" list="homeTypes" maxlength="50" placeholder="Enter home type">
+        <datalist id="homeTypes">
+            <option value="Single Family">
+            <option value="Condo">
+            <option value="Townhouse">
+            <option value="Multiple Occupancy">
+            <option value="Residential">
+            <option value="Apartment">
+            <option value="Mobile / Manufactured">
+            <option value="MultiFamily">
+            <option value="Vacant Land">
+            <option value="Other">
+        </datalist>
+
+        <!-- Latitude -->
+        <label for="latitude">Latitude</label>
+        <input type="text" id="latitude" name="latitude" maxlength="20" placeholder="Enter latitude">
+
+        <!-- Longitude -->
+        <label for="longitude">Longitude</label>
+        <input type="text" id="longitude" name="longitude" maxlength="20" placeholder="Enter longitude">
+
+        <!-- Garage Spaces -->
+        <label for="garageSpaces">Garage Spaces</label>
+        <input type="number" id="garageSpaces" name="garageSpaces" placeholder="Enter number of garage spaces">
+
+        <!-- Has Spa -->
+        <label>Has Spa</label>
+        <input type="radio" id="hasSpa_yes" name="hasSpa" value="1"> Yes 
+        <input type="radio" id="hasSpa_no" name="hasSpa" value="0"> No 
+
+        <!-- Year Built -->
+        <label for="yearBuilt">Year Built</label>
+        <input type="number" id="yearBuilt" name="yearBuilt" placeholder="Enter year built">
+
+        <!-- Patio/Porch Features -->
+        <label for="numOfPatioAndPorchFeatures">Patio/Porch Features</label>
+        <input type="number" id="numOfPatioAndPorchFeatures" name="numOfPatioAndPorchFeatures" placeholder="Enter number of features">
+
+        <!-- Lot Size in SqFt -->
+        <label for="lotSizeSqFt">Lot Size (Sq Ft)</label>
+        <input type="number" id="lotSizeSqFt" name="lotSizeSqFt" placeholder="Enter lot size in Sq Ft">
+
+        <!-- Average School Rating -->
+        <label for="avgSchoolRating">Average School Rating</label>
+        <input type="number" id="avgSchoolRating" name="avgSchoolRating" placeholder="Enter average school rating">
+
+        <!-- Number of Bathrooms -->
+        <label for="numOfBathrooms">Number of Bathrooms</label>
+        <input type="number" id="numOfBathrooms" name="numOfBathrooms" placeholder="Enter number of bathrooms">
+
+        <!-- Number of Bedrooms -->
+        <label for="numOfBedrooms">Number of Bedrooms</label>
+        <input type="number" id="numOfBedrooms" name="numOfBedrooms" placeholder="Enter number of bedrooms">
+
+        <!-- Submit and Reset Buttons -->
+        <div class="button-group">
+            <input type="submit" value="Submit">
+            <input type="reset" value="Reset" onclick="location.href='/';">
+        </div>
+
+        <!-- Prediction Result -->
+        <div class="result">
+            <h3>{{ prediction }}</h3>
+        </div>
+    </form>
+</body>
+
+</html>
