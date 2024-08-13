@@ -1,7 +1,4 @@
-# Importing Dependencies
 import os
-import sys
-from pathlib import Path
 
 import pandas as pd
 from flask import (
@@ -9,27 +6,27 @@ from flask import (
     render_template,
     request,
 )
-
-# Assuming 'prediction_model' is in the parent directory
-PACKAGE_ROOT = Path(os.path.abspath(os.path.dirname(__file__)))
-sys.path.append(str(PACKAGE_ROOT.parent))
-print(PACKAGE_ROOT)
-
-from packaging_ml_model.prediction_model.config import config
-from packaging_ml_model.prediction_model.predict import predictions
+from prediction_model.config import config
+from prediction_model.predict import predictions
 
 app = Flask(__name__)
 
 RANDOM_NUMBER = 16092023
 ORIGINAL_FEATURES = config.ORIGINAL_FEATURES
+GEOLOCATION = config.GEOLOCATION_0
 CATEGORICAL_FEATURES = config.CATEGORICAL_FEATURES
 NON_REQUIRED_FEATURES = ["uid", "priceRange", "MedianStudentsPerTeacher"]
-
-NUMERICAL_FEATURES = [
+BOOLEAN_FEATURES = ["hasSpa"]
+DESCRIPTION_FEATURE = config.DESCRIPTION_FEATURE
+CATEGORICAL_FEATURES.remove(BOOLEAN_FEATURES[0])
+INTEGER_FEATURES = [
     element
     for element in ORIGINAL_FEATURES
-    if element not in CATEGORICAL_FEATURES and element not in NON_REQUIRED_FEATURES
+    if element not in CATEGORICAL_FEATURES
+    and element not in NON_REQUIRED_FEATURES
+    and element not in GEOLOCATION
 ]
+TARGET = config.TARGET
 
 
 # Views
@@ -45,27 +42,14 @@ def predict():
         request_data = dict(request.form)
 
         # Example: Add specific fields manually (like 'textarea') if needed
-        text = request.form.get("description")
+        text = request.form.get(DESCRIPTION_FEATURE)
         if text is not None:
-            request_data["description"] = text.strip()  # Add the text field to request_data
+            request_data[DESCRIPTION_FEATURE] = text.strip()  # Add the text field to request_data
 
         # Process numeric, boolean, and text fields as before
-        numeric_fields = [
-            "garageSpaces",
-            "yearBuilt",
-            "numOfPatioAndPorchFeatures",
-            "lotSizeSqFt",
-            "avgSchoolRating",
-            "numOfBathrooms",
-            "numOfBedrooms",
-        ]
-        boolean_fields = ["hasSpa"]
-        text_fields = [
-            "city",
-            "homeType",
-            "description",
-            "textarea",
-        ]  # Add 'textarea' if it's a text field
+        numeric_fields = INTEGER_FEATURES
+        boolean_fields = BOOLEAN_FEATURES
+        text_fields = CATEGORICAL_FEATURES
 
         for field in numeric_fields:
             if field in request_data:
@@ -87,8 +71,8 @@ def predict():
         # Adding default values for missing fields
         if "MedianStudentsPerTeacher" not in request_data:
             request_data["MedianStudentsPerTeacher"] = RANDOM_NUMBER
-        if "priceRange" not in request_data:
-            request_data["priceRange"] = "ANY VALUE"
+        if TARGET not in request_data:
+            request_data[TARGET] = "ANY VALUE"
 
         # Convert the processed data to a DataFrame
         data = pd.DataFrame([request_data])
@@ -118,4 +102,4 @@ def not_found(error):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
